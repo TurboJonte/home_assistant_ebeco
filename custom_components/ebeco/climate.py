@@ -172,6 +172,7 @@ class EbecoDevice(ClimateEntity):
             "error_message": self._device_data["errorMessage"],
             "todays_on_minutes": self._device_data["todaysOnMinutes"],
             "building": self._device_data["building"]["name"],
+            "energy_today": self._device_data["energyToday"],
         }
         return res
 
@@ -299,12 +300,25 @@ class Ebeco:
             RequestType.PUT,
             json_data=json_data,
         )
+        
+    async def get_energy_today(self, device_id):
+        json_data = {
+            "id": device_id,
+            "from": preset_mode,
+            "to": preset_mode,
+        }
+        await self._request(
+            API_URL + "/services/app/Devices/GetUserDeviceEnergyData",
+            RequestType.GET,
+            json_data=json_data,
+        )
 
     async def fetch_user_devices(self):
         """Get user devices"""
 
         response = await self._request(
-            API_URL + "/services/app/Devices/GetUserDevices/", RequestType.GET
+            API_URL + "/services/app/Devices/GetUserDevices/",
+            RequestType.GET
         )
 
         if response is None:
